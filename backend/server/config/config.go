@@ -1,4 +1,4 @@
-package server
+package config
 
 import (
 	"encoding/json"
@@ -56,6 +56,7 @@ type NetConfig struct {
 	HTTP         WebConfig
 	LDAP         LDAPConfig
 	Database     DatabaseConfig
+	Coordinator CoordinatorConfig
 	SessionStore SessionStoreConfig
 }
 
@@ -92,6 +93,10 @@ type LDAPConfig struct {
 	Base     string
 	GroupOU  string
 	UserOUs  []string
+}
+
+type CoordinatorConfig struct {
+	Address string
 }
 
 type DatabaseConfig struct {

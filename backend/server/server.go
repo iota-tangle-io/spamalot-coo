@@ -14,6 +14,8 @@ import (
 	"io"
 	"os"
 	"time"
+	"github.com/iota-tangle-io/spamalot-coo/backend/api"
+	"github.com/iota-tangle-io/spamalot-coo/backend/server/config"
 )
 
 type TemplateRendered struct {
@@ -25,7 +27,7 @@ func (t *TemplateRendered) Render(w io.Writer, name string, data interface{}, c 
 }
 
 type Server struct {
-	Config    *Configuration
+	Config    *config.Configuration
 	WebEngine *echo.Echo
 	Mongo     *mgo.Session
 }
@@ -34,7 +36,7 @@ func (server *Server) Start() {
 	start := time.Now().UnixNano()
 
 	// load config
-	configuration := LoadConfig()
+	configuration := config.LoadConfig()
 	server.Config = configuration
 	appConfig := server.Config.App
 	httpConfig := server.Config.Net.HTTP
@@ -67,6 +69,7 @@ func (server *Server) Start() {
 
 	// init web server
 	e := echo.New()
+	e.HideBanner = true
 	server.WebEngine = e
 	if httpConfig.LogRequests {
 		requestLogFile, err := os.Create(fmt.Sprintf("./logs/requests.log"))
@@ -81,6 +84,9 @@ func (server *Server) Start() {
 	e.Renderer = &TemplateRendered{
 		templates: template.Must(template.ParseGlob(fmt.Sprintf("%s/*.html", httpConfig.Assets.HTML))),
 	}
+
+	// coordinator
+	coordinator := &api.Coordinator{Config: configuration.Net.Coordinator}
 
 	// asset paths
 	e.Static("/assets", httpConfig.Assets.Static)
@@ -106,6 +112,7 @@ func (server *Server) Start() {
 	// add various objects to the graph
 	if err = g.Provide(
 		&inject.Object{Value: e},
+		&inject.Object{Value: coordinator},
 		&inject.Object{Value: mongo},
 		&inject.Object{Value: appConfig.Dev, Name: "dev"},
 		&inject.Object{Value: httpConfig.ReCaptcha.PublicKey, Name: "recaptchaPublicKey"},
@@ -147,12 +154,15 @@ func (server *Server) Start() {
 	}
 	logger.Info("initialised routers")
 
+	// firing up coordinator
+	coordinator.Run()
+
 	// boot up server
 	go e.Start(httpConfig.Address)
 
 	// finish
 	delta := (time.Now().UnixNano() - start) / 1000000
-	logger.Info(fmt.Sprintf("%s ready", configuration.App.Name), "startup", delta)
+	logger.Info(fmt.Sprintf("SPA ready, listening on %s", httpConfig.Address), "startup", delta)
 
 }
 
@@ -162,7 +172,7 @@ func (server *Server) Shutdown(timeout time.Duration) {
 	}
 }
 
-func connectMongoDB(config MongoDBConfig) (*mgo.Session, error) {
+func connectMongoDB(config config.MongoDBConfig) (*mgo.Session, error) {
 	var session *mgo.Session
 	var err error
 	if config.Auth {

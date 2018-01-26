@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"math/rand"
 	"fmt"
+	"github.com/iota-tangle-io/spamalot-coo/backend/lib"
 )
 
 const instancesColl = "instances"
@@ -16,8 +17,6 @@ type InstanceCtrl struct {
 	Mongo *mgo.Session `inject:""`
 	coll  *mgo.Collection
 }
-
-const tokenChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 func (ctrl *InstanceCtrl) Init() error {
 	ctrl.coll = ctrl.Mongo.DB("").C(instancesColl)
@@ -41,23 +40,6 @@ func (ctrl *InstanceCtrl) addDefaultInstance() {
 			fmt.Printf("unable to add default instance, %v", err)
 		}
 	}
-}
-
-func (ctrl *InstanceCtrl) NewAPIToken() string {
-	var apiToken string
-	// TODO: there's a race condition here, but a low change of happening
-	for {
-		b := make([]byte, 32)
-		for i := range b {
-			b[i] = tokenChars[rand.Intn(len(tokenChars))]
-		}
-		apiToken = string(b)
-		// ensure that no other instance has the same API token
-		if _, err := ctrl.ByAPIToken(apiToken); err != nil {
-			break
-		}
-	}
-	return apiToken
 }
 
 func (ctrl *InstanceCtrl) All() (models.Instances, error) {
@@ -90,7 +72,17 @@ func (ctrl *InstanceCtrl) ByAPIToken(token string) (*models.Instance, error) {
 func (ctrl *InstanceCtrl) Add(instance *models.Instance) error {
 	instance.ID = bson.NewObjectId()
 	instance.CreatedOn = time.Now()
-	instance.APIToken = ctrl.NewAPIToken()
+
+	var apiToken string
+	for {
+		apiToken = lib.NewAPIToken()
+		// ensure that no other instance has the same API token
+		if _, err := ctrl.ByAPIToken(apiToken); err != nil {
+			break
+		}
+	}
+
+	instance.APIToken = apiToken
 	err := ctrl.coll.Insert(instance)
 	return errors.WithStack(err)
 }
