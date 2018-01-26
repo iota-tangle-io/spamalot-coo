@@ -16,7 +16,7 @@ $gunmetal: #283044;
 body {
   box-sizing: border-box !important;
   font-family: 'Roboto', 'Helvetica', sans-serif;
-  background: $yankees_blue;
+  font-size: 14px;
 }
 
 .datePickerBox {
@@ -47,6 +47,10 @@ h1,h2,h3 {
   }
 }
 
+a {
+  text-decoration: none;
+}
+
 .errorCodeChartTooltip {
   padding: 5px;
   background: white;
@@ -56,7 +60,6 @@ h1,h2,h3 {
 .container {
   position: absolute;
   width: 100%;
-  color: $white_smoke;
   padding-left: 100px;
   padding-right: 100px;
   box-sizing: border-box;
@@ -68,8 +71,8 @@ h1,h2,h3 {
   left: 0;
   width: 100%;
   height: 60px;
-  color: $gunmetal;
-  background: #F4F9E9;
+  color: $white_smoke;
+  background: $yankees_blue;
 
   .site_title {
     position: absolute;
@@ -94,12 +97,13 @@ h1,h2,h3 {
       padding-right: 10px;
       height: 60px;
       line-height: 60px;
+      color: $white_smoke;
 
       &:hover {
         cursor: pointer;
         transition: 0.1s;
         color: $white_smoke;
-        background: $yankees_blue;
+        background: lighten($yankees_blue, 20%);
       }
     }
   }
@@ -146,6 +150,9 @@ h1,h2,h3 {
 
   .instance_overview {
     padding: 20px;
-    background: $dark_slate_gray;
+    width: 45%;
+    margin-right: 5%;
+    float: left;
+    border: 1px solid black;
   }
 }
