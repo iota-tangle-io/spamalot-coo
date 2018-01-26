@@ -1,0 +1,41 @@
+{
+  "http": {
+    "domain": "example.com",
+    "address": "0.0.0.0:9000",
+    "tls": {
+      "use": false,
+      "privateKey": "private.key",
+      "certificate": "cert.crt"
+    },
+    "assets": {
+      "static": "../../frontend",
+      "favicon": "../../frontend/img/favicon.ico",
+      "html": "../../frontend/html"
+    },
+    "recaptcha": {
+      "use": true,
+      "privateKey": "",
+      "publicKey": ""
+    },
+    "sessions": {
+      "privateKey": ""
+    },
+    "logRequests": false
+  },
+  "database": {
+    "mongo": {
+      "use": true,
+      "address": "mongodb://127.0.0.1:27017/spamalot-coo",
+      "auth": false,
+      "username": "",
+      "password": "",
+      "mechanism": "SCRAM-SHA-1",
+      "source": "admin"
+    }
+  },
+  "sessionStore": {
+    "redis": {
+      "address": "127.0.0.1:6379"
+    }
+  }
+}
