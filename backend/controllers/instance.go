@@ -35,7 +35,7 @@ func (ctrl *InstanceCtrl) addDefaultInstance() {
 		Tags: []string{"default", "local"},
 		Online: false, // probably not
 	}
-	if _, err := ctrl.ByName(instance.ID.Hex()); err != nil {
+	if _, err := ctrl.ByName(instance.Name); err != nil {
 		if err := ctrl.Add(instance); err != nil {
 			fmt.Printf("unable to add default instance, %v", err)
 		}
@@ -59,7 +59,7 @@ func (ctrl *InstanceCtrl) ByID(id string) (*models.Instance, error) {
 
 func (ctrl *InstanceCtrl) ByName(name string) (*models.Instance, error) {
 	instance := &models.Instance{}
-	err := ctrl.coll.FindId(bson.M{"name": name}).One(&instance)
+	err := ctrl.coll.Find(bson.M{"name": name}).One(&instance)
 	return instance, errors.WithStack(err)
 }
 
