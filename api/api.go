@@ -10,11 +10,13 @@ type CooMsg struct {
 type CooMsgType byte
 
 const (
+	UNDEFINED CooMsgType = 0
+
 	// single spammer
-	CREATE_SP  CooMsgType = 0
-	READ_SP    CooMsgType = 1
-	UPDATE_SP  CooMsgType = 2
-	RESTART_SP CooMsgType = 3
+	CREATE_SP  CooMsgType = 1
+	READ_SP    CooMsgType = 2
+	UPDATE_SP  CooMsgType = 3
+	RESTART_SP CooMsgType = 4
 
 	// multiple spammers
 	STOP_SPS    CooMsgType = 10
@@ -23,6 +25,10 @@ const (
 
 	// errors
 	ERR_HELLO_NOT_SENT CooMsgType = 20
+	SLAVE_API_TOKEN_INVALID CooMsgType = 21
+
+	// slave
+	SLAVE_WELCOME CooMsgType = 30
 )
 
 type PoWMode byte

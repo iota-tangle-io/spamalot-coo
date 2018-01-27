@@ -29,8 +29,6 @@ type Router interface {
 type IndexRouter struct {
 	WebEngine          *echo.Echo `inject:""`
 	Dev                bool       `inject:"dev"`
-	ReCAPTCHAPublicKey string     `inject:"recaptchaPublicKey"`
-	UseRecaptcha       bool       `inject:"useRecaptcha"`
 }
 
 func (indexRouter *IndexRouter) Init() {

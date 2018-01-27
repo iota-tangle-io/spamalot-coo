@@ -14,7 +14,7 @@ import (
 	"io"
 	"os"
 	"time"
-	"github.com/iota-tangle-io/spamalot-coo/backend/api"
+	"github.com/iota-tangle-io/spamalot-coo/api"
 	"github.com/iota-tangle-io/spamalot-coo/backend/server/config"
 )
 
@@ -115,8 +115,6 @@ func (server *Server) Start() {
 		&inject.Object{Value: coordinator},
 		&inject.Object{Value: mongo},
 		&inject.Object{Value: appConfig.Dev, Name: "dev"},
-		&inject.Object{Value: httpConfig.ReCaptcha.PublicKey, Name: "recaptchaPublicKey"},
-		&inject.Object{Value: httpConfig.ReCaptcha.Use, Name: "useRecaptcha"},
 	); err != nil {
 		panic(err)
 	}

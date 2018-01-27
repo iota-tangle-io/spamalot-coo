@@ -12,11 +12,6 @@
       "favicon": "../../frontend/img/favicon.ico",
       "html": "../../frontend/html"
     },
-    "recaptcha": {
-      "use": true,
-      "privateKey": "",
-      "publicKey": ""
-    },
     "sessions": {
       "privateKey": ""
     },

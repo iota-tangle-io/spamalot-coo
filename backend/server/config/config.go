@@ -73,11 +73,6 @@ type WebConfig struct {
 		HTML    string
 		Favicon string
 	}
-	ReCaptcha struct {
-		Use        bool
-		PrivateKey string
-		PublicKey  string
-	}
 	Sessions struct {
 		PrivateKey string
 	}
