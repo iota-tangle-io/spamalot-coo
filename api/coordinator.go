@@ -64,14 +64,14 @@ func (coo *Coordinator) wsHandler(c echo.Context) error {
 
 	helloMsg := &SlaveHelloMsg{}
 	if err := json.Unmarshal(slaveMsg.Payload, helloMsg); err != nil {
-		connLogger.Warn("unable to parse paylaod of SLAVE_HELLO message", "err", err.Error())
+		connLogger.Warn("unable to parse payload of SLAVE_HELLO message", "err", err.Error())
 		return nil
 	}
 
 	// expect an API token from the slave
 	if !lib.ValidAPIToken(helloMsg.APIToken) {
-		if err := ws.WriteJSON(&CooMsg{Type: ERR_HELLO_NOT_SENT}); err != nil {
-			connLogger.Warn("wasn't able to send ERR_HELLO_NOT_SENT", "err", err.Error())
+		if err := ws.WriteJSON(&CooMsg{Type: SLAVE_API_TOKEN_INVALID}); err != nil {
+			connLogger.Warn("wasn't able to send SLAVE_API_TOKEN_INVALID", "err", err.Error())
 		}
 		return nil
 	}

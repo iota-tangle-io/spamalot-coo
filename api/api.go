@@ -26,8 +26,7 @@ const (
 	DELETE_SPS  CooMsgType = 12
 
 	// errors
-	ERR_HELLO_NOT_SENT      CooMsgType = 20
-	SLAVE_API_TOKEN_INVALID CooMsgType = 21
+	SLAVE_API_TOKEN_INVALID CooMsgType = 20
 
 	// slave
 	SLAVE_WELCOME CooMsgType = 30
