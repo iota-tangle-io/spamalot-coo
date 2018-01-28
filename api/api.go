@@ -2,9 +2,11 @@
 // its programmed in such a way, so that different means of transport can be used
 package api
 
+import "encoding/json"
+
 type CooMsg struct {
-	Type    CooMsgType  `json:"type" bson:"typ"`
-	Payload interface{} `json:"payload" bson:"payload"`
+	Type    CooMsgType      `json:"type" bson:"typ"`
+	Payload json.RawMessage `json:"payload" bson:"payload"`
 }
 
 type CooMsgType byte
@@ -24,7 +26,7 @@ const (
 	DELETE_SPS  CooMsgType = 12
 
 	// errors
-	ERR_HELLO_NOT_SENT CooMsgType = 20
+	ERR_HELLO_NOT_SENT      CooMsgType = 20
 	SLAVE_API_TOKEN_INVALID CooMsgType = 21
 
 	// slave
@@ -51,7 +53,8 @@ type SpammerConfig struct {
 type SlaveMsgType byte
 
 const (
-	HELLO SlaveMsgType = 0
+	SLAVE_HELLO SlaveMsgType = 0
+	SLAVE_BYE   SlaveMsgType = 1
 )
 
 type SlaveHelloMsg struct {
@@ -59,6 +62,6 @@ type SlaveHelloMsg struct {
 }
 
 type SlaveMsg struct {
-	Type    SlaveMsgType `json:"type" bson:"type"`
-	Payload interface{}
+	Type    SlaveMsgType    `json:"type" bson:"type"`
+	Payload json.RawMessage `json:"payload" bson:"payload"`
 }

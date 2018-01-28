@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/iota-tangle-io/spamalot-coo/backend/lib"
+	"encoding/json"
 )
 
 type Coordinator struct {
@@ -50,9 +51,20 @@ func (coo *Coordinator) wsHandler(c echo.Context) error {
 	connLogger.Info("new slave ws connection")
 
 	// expect the first read to be a hello from the slave
+	slaveMsg := &SlaveMsg{}
+	if err := ws.ReadJSON(slaveMsg); err != nil {
+		connLogger.Warn("unable to read first slave message, closing conn.")
+		return nil
+	}
+
+	if slaveMsg.Type != SLAVE_HELLO {
+		connLogger.Warn("first message was not SLAVE_HELLO, closing conn.")
+		return nil
+	}
+
 	helloMsg := &SlaveHelloMsg{}
-	if err := ws.ReadJSON(helloMsg); err != nil {
-		connLogger.Warn("first message was not HELLO, closing conn.")
+	if err := json.Unmarshal(slaveMsg.Payload, helloMsg); err != nil {
+		connLogger.Warn("unable to parse paylaod of SLAVE_HELLO message", "err", err.Error())
 		return nil
 	}
 
@@ -78,8 +90,8 @@ func (coo *Coordinator) handleSlave(slaveWsConn *websocket.Conn, apiToken string
 		}
 		return
 	}
-	// so the compiler doesn't yell
-	_ = slave
+
+	slaveLogger := coo.logger.New("slave", slave.Name)
 
 	// send the slave a warm welcome after validating its existence
 	if err := slaveWsConn.WriteJSON(&CooMsg{Type: SLAVE_WELCOME}); err != nil {
@@ -87,5 +99,20 @@ func (coo *Coordinator) handleSlave(slaveWsConn *websocket.Conn, apiToken string
 		return
 	}
 
-	// ...
+	for {
+
+		msg := &SlaveMsg{}
+		if err := slaveWsConn.ReadJSON(msg); err != nil {
+			slaveLogger.Warn("unable to read new message", "err", err.Error())
+			break
+		}
+
+		// router for messages
+		switch msg.Type {
+		case SLAVE_BYE:
+			slaveLogger.Info("disconnected")
+			break
+		}
+
+	}
 }
