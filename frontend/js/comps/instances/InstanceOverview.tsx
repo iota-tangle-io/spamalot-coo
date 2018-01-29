@@ -32,22 +32,31 @@ export class InstanceOverview extends React.Component<Props, {}> {
         return (
             <div className={'instance_overview'}>
                 <h3>{instance.name} <OnlineIndicator online={instance.online}/></h3>
-                <p>Slave address: {instance.address}</p>
-                <p>API token: {instance.api_token}</p>
+                <p>Slave Address: {instance.address}</p>
+                <p>API Token: {instance.api_token}</p>
                 <p>Description: {instance.desc}</p>
                 <p>Config: remote node {config.node_address}, mwm: {config.mwm}, depth: {config.depth},</p>
-                <p>Spammer: {
-                    instance.last_state.running
-                        ? <span className={'spammer_running_indicator'}>running</span>
-                        : <span className={'spammer_stopped_indicator'}>not running</span>
-                    }
-                </p>
-                {lastState && <p>Config hash: {instance.last_state.config_hash}</p>}
+                {
+                    instance.online &&
+                    <div>
+                        <p>Spammer: {
+                            instance.last_state.running
+                                ? <span className={'spammer_running_indicator'}>running</span>
+                                : <span className={'spammer_stopped_indicator'}>not running</span>
+                        }
+                        </p>
+                        {lastState && <p>Config Hash: {instance.last_state.config_hash}</p>}
+                    </div>
+                }
                 <p>Created: {dateformat(instance.created_on, 'dd.mm.yy HH:mm:ss')}</p>
+                <p>Last Update: {dateformat(instance.updated_on, 'dd.mm.yy HH:mm:ss')}</p>
 
-                <div className='smallButton' onClick={this.start}>Start</div>
-                <div className='smallButton' onClick={this.stop}>Stop</div>
-                <div className='smallButton' onClick={this.restart}>Restart</div>
+                <button disabled={instance.last_state.running} className='smallButton startButton'
+                        onClick={this.start}>Start
+                </button>
+                <button disabled={!instance.last_state.running} className='smallButton' onClick={this.stop}>Stop
+                </button>
+                <button className='smallButton restartButton' onClick={this.restart}>Restart</button>
             </div>
         );
     }

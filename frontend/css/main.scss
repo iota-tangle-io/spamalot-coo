@@ -30,7 +30,7 @@ body {
   margin-right: 10px;
 }
 
-h1,h2,h3 {
+h1, h2, h3 {
   font-weight: normal;
 }
 
@@ -161,11 +161,11 @@ a {
   }
 }
 
-.spammer_running_indicator{
+.spammer_running_indicator {
   color: $spring_bud;
 }
 
-.spammer_stopped_indicator{
+.spammer_stopped_indicator {
   color: $dark_salmon;
 }
 
@@ -179,6 +179,7 @@ a {
   background: white;
   color: black;
   border: none;
+  outline: none;
   text-align: center;
   float: left;
   margin-right: 10px;
@@ -186,7 +187,29 @@ a {
   &:hover {
     transition: 0.1s;
     cursor: pointer;
-    background: $dark_slate_gray;
+    background: $pastal_red;
     color: white;
+  }
+}
+
+.startButton {
+  &:hover {
+    background: #5BD65B;
+    color: white;
+  }
+}
+
+.restartButton {
+  &:hover {
+    background: #f4b317;
+    color: white;
+  }
+}
+
+.smallButton:disabled {
+  background: darken(white, 20%);
+  cursor: not-allowed;
+  &:hover {
+    color: black;
   }
 }
