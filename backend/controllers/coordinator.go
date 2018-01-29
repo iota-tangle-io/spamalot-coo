@@ -129,8 +129,8 @@ func (coo *Coordinator) communicate(connLogger log15.Logger, slaveWsConn *websoc
 	coo.sendStartMsg(slaveWsConn, slaveLogger)
 
 	spammerStateMsg = coo.readSpammerStateMsg(slaveWsConn, slaveLogger)
-	if err != nil {
-		slaveLogger.Warn("unable to read spammer state after sending SP_START", "err", err.Error())
+	if spammerStateMsg == nil {
+		slaveLogger.Warn("unable to read spammer state after sending SP_START")
 		return
 	}
 

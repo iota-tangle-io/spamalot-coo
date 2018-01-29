@@ -14,6 +14,7 @@ $portland_orange: #F46036;
 $gunmetal: #283044;
 $spring_bud: #CAEF8B;
 $dark_salmon: #EF8B98;
+$midnight_dark: #323e4a;
 
 body {
   box-sizing: border-box !important;
@@ -50,7 +51,7 @@ h1, h2, h3 {
 }
 
 a {
-  text-decoration: none;
+  color: black;
 }
 
 .errorCodeChartTooltip {
@@ -186,7 +187,29 @@ a {
 
   &:hover {
     transition: 0.1s;
+    background: darken(white, 10%);
     cursor: pointer;
+  }
+}
+
+.instance_controls{
+  .smallButton {
+    background: none;
+    color: white;
+    margin-right: 0px;
+  }
+
+  .smallButton:disabled{
+    background: darken($midnight_dark, 10%);
+    cursor: not-allowed;
+    &:hover {
+      color: white;
+    }
+  }
+}
+
+.stopButton {
+  &:hover {
     background: $pastal_red;
     color: white;
   }
@@ -212,4 +235,50 @@ a {
   &:hover {
     color: black;
   }
+}
+
+.list {
+    li {
+      margin-bottom: 10px;
+    }
+}
+
+.api_token {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 5px;
+  background: $yankees_blue;
+  color: white;
+}
+
+.instance_controls {
+  background: $midnight_dark;
+}
+
+.tx_log {
+  padding: 10px;
+  background: $midnight_dark;
+  height: 200px;
+  overflow-y: scroll;
+  .log_entry{
+    color: #27da9f;
+    display: block;
+    margin-bottom: 5px;
+    background:  darken($midnight_dark, 10%);
+    padding: 5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+}
+
+.clearfix:after {
+  content: ".";
+  clear: both;
+  display: block;
+  visibility: hidden;
+  height: 0px;
 }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {InstanceStore} from "../../stores/InstanceStore";
 import dateformat from 'dateformat';
+import {Link} from 'react-router-dom';
 import {inject, observer} from "mobx-react";
 
 interface Props {
@@ -41,7 +42,7 @@ export class InstanceOverview extends React.Component<Props, {}> {
                     instance.online &&
                     <div>
                         <p>Spammer: {
-                            instance.last_state.running
+                            running
                                 ? <span className={'spammer_running_indicator'}>running</span>
                                 : <span className={'spammer_stopped_indicator'}>not running</span>
                         }
@@ -52,6 +53,11 @@ export class InstanceOverview extends React.Component<Props, {}> {
                 <p>Created: {dateformat(instance.created_on, 'dd.mm.yy HH:mm:ss')}</p>
                 <p>Last Update: {dateformat(instance.updated_on, 'dd.mm.yy HH:mm:ss')}</p>
 
+                        <Link to={`/instance/${instance.id}`}>
+                            <button className='smallButton' onClick={this.restart}>
+                                Dashboard
+                            </button>
+                        </Link>
                 {
                     instance.online &&
                     <div>
@@ -65,6 +71,8 @@ export class InstanceOverview extends React.Component<Props, {}> {
                         <button className='smallButton restartButton' onClick={this.restart}>
                             Restart
                         </button>
+
+
                     </div>
                 }
             </div>
