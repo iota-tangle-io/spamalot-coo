@@ -14,7 +14,6 @@ import (
 	"io"
 	"os"
 	"time"
-	"github.com/iota-tangle-io/spamalot-coo/api"
 	"github.com/iota-tangle-io/spamalot-coo/backend/server/config"
 )
 
@@ -86,7 +85,7 @@ func (server *Server) Start() {
 	}
 
 	// coordinator
-	coordinator := &api.Coordinator{Config: configuration.Net.Coordinator}
+	coordinator := &controllers.Coordinator{Config: configuration.Net.Coordinator}
 
 	// asset paths
 	e.Static("/assets", httpConfig.Assets.Static)

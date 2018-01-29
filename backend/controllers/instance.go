@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"fmt"
 	"github.com/iota-tangle-io/spamalot-coo/backend/lib"
+	"github.com/iota-tangle-io/spamalot-coo/api"
 )
 
 const instancesColl = "instances"
@@ -26,14 +27,15 @@ func (ctrl *InstanceCtrl) Init() error {
 }
 
 const defaultInstanceName = "Default Instance"
+
 func (ctrl *InstanceCtrl) addDefaultInstance() {
 	var instance = &models.Instance{
-		ID: bson.ObjectId("56d86ac3ce70d40078d36dc3"),
+		ID:      bson.ObjectId("56d86ac3ce70d40078d36dc3"),
 		Address: "127.0.0.1:16254",
-		Name: defaultInstanceName,
-		Desc: "default instance, usually running on the same host as the coordinator",
-		Tags: []string{"default", "local"},
-		Online: false, // probably not
+		Name:    defaultInstanceName,
+		Desc:    "default instance, usually running on the same host as the coordinator",
+		Tags:    []string{"default", "local"},
+		Online:  false, // probably not
 	}
 	if _, err := ctrl.ByName(instance.Name); err != nil {
 		if err := ctrl.Add(instance); err != nil {
@@ -82,6 +84,7 @@ func (ctrl *InstanceCtrl) Add(instance *models.Instance) error {
 		}
 	}
 
+	instance.SpammerConfig = api.NewDefaultSpammerConfig()
 	instance.APIToken = apiToken
 	err := ctrl.coll.Insert(instance)
 	return errors.WithStack(err)
@@ -90,10 +93,11 @@ func (ctrl *InstanceCtrl) Add(instance *models.Instance) error {
 func (ctrl *InstanceCtrl) Update(instance *models.Instance) error {
 	err := ctrl.coll.UpdateId(instance.ID, bson.M{
 		"$set": bson.M{
-			"address": instance.Address,
-			"name":       instance.Name,
-			"desc":       instance.Desc,
-			"tags":       instance.Tags,
+			"address":        instance.Address,
+			"name":           instance.Name,
+			"desc":           instance.Desc,
+			"tags":           instance.Tags,
+			"spammer_config": instance.SpammerConfig,
 			// online is set by the coordinator
 			"updated_on": time.Now,
 		},
