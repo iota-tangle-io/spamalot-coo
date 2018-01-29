@@ -29,6 +29,7 @@ export class InstanceOverview extends React.Component<Props, {}> {
         let instance = this.props.instanceStore.instances.get(key);
         let config = instance.spammer_config;
         let lastState = instance.last_state;
+        let running = instance.last_state ? instance.last_state.running : false;
         return (
             <div className={'instance_overview'}>
                 <h3>{instance.name} <OnlineIndicator online={instance.online}/></h3>
@@ -51,12 +52,21 @@ export class InstanceOverview extends React.Component<Props, {}> {
                 <p>Created: {dateformat(instance.created_on, 'dd.mm.yy HH:mm:ss')}</p>
                 <p>Last Update: {dateformat(instance.updated_on, 'dd.mm.yy HH:mm:ss')}</p>
 
-                <button disabled={instance.last_state.running} className='smallButton startButton'
-                        onClick={this.start}>Start
-                </button>
-                <button disabled={!instance.last_state.running} className='smallButton' onClick={this.stop}>Stop
-                </button>
-                <button className='smallButton restartButton' onClick={this.restart}>Restart</button>
+                {
+                    instance.online &&
+                    <div>
+
+                        <button disabled={running} className='smallButton startButton' onClick={this.start}>
+                            Start
+                        </button>
+                        <button disabled={!running} className='smallButton' onClick={this.stop}>
+                            Stop
+                        </button>
+                        <button className='smallButton restartButton' onClick={this.restart}>
+                            Restart
+                        </button>
+                    </div>
+                }
             </div>
         );
     }

@@ -260,12 +260,10 @@ func (coo *Coordinator) sendStopMsg(slaveWsConn *websocket.Conn, logger log15.Lo
 
 func (coo *Coordinator) readSpammerStateMsg(slaveWsConn *websocket.Conn, logger log15.Logger) *api.SlaveSpammerStateMsg {
 	msg := &api.SlaveMsg{}
-	logger.Info("A")
 	if err := slaveWsConn.ReadJSON(msg); err != nil {
 		logger.Warn("unable to read expected spammer state msg", "err", err.Error())
 		return nil
 	}
-	logger.Info("B")
 
 	if msg.Type != api.SLAVE_SPAMMER_STATE {
 		logger.Warn("expected SLAVE_SPAMMER_STATE msg from slave", "actualCode", msg.Type)
