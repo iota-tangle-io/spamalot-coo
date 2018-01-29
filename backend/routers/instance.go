@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"github.com/iota-tangle-io/spamalot-coo/backend/models"
 	"fmt"
+	"github.com/iota-tangle-io/spamalot-coo/api"
+	"encoding/json"
 )
 
 type InstanceRouter struct {
@@ -13,8 +15,8 @@ type InstanceRouter struct {
 	InstanceCtrl *controllers.InstanceCtrl `inject:""`
 }
 
-func instanceRoute(instance *models.Instance) string {
-	return fmt.Sprintf("/api/instances/id/%s", instance.ID.Hex())
+func instanceRoute(id string) string {
+	return fmt.Sprintf("/api/instances/id/%s", id)
 }
 
 func (router *InstanceRouter) Init() {
@@ -38,6 +40,49 @@ func (router *InstanceRouter) Init() {
 		return c.JSON(http.StatusOK, instance)
 	})
 
+	group.GET("/id/:id/start", func(c echo.Context) error {
+		id := c.Param("id")
+		if err := router.InstanceCtrl.SendCooMsgToSlave(id, api.SP_START, nil); err != nil {
+			return err
+		}
+		return c.Redirect(http.StatusSeeOther, instanceRoute(id))
+	})
+
+	group.GET("/id/:id/stop", func(c echo.Context) error {
+		id := c.Param("id")
+		if err := router.InstanceCtrl.SendCooMsgToSlave(id, api.SP_STOP, nil); err != nil {
+			return err
+		}
+		return c.Redirect(http.StatusSeeOther, instanceRoute(id))
+	})
+
+	group.GET("/id/:id/restart", func(c echo.Context) error {
+		id := c.Param("id")
+		if err := router.InstanceCtrl.SendCooMsgToSlave(id, api.SP_RESTART, nil); err != nil {
+			return err
+		}
+		return c.Redirect(http.StatusSeeOther, instanceRoute(id))
+	})
+
+	group.POST("/id/:id/reset_config", func(c echo.Context) error {
+		id := c.Param("id")
+
+		spammerConfig := &api.SpammerConfig{}
+		if err := c.Bind(spammerConfig); err != nil {
+			return err
+		}
+
+		spammerConfigBytes, err := json.Marshal(spammerConfig)
+		if err != nil {
+			return err
+		}
+
+		if err := router.InstanceCtrl.SendCooMsgToSlave(id, api.SP_RESET_CONFIG, spammerConfigBytes); err != nil {
+			return err
+		}
+		return c.Redirect(http.StatusSeeOther, instanceRoute(id))
+	})
+
 	group.GET("/token/:token", func(c echo.Context) error {
 		token := c.Param("token")
 		instance, err := router.InstanceCtrl.ByAPIToken(token)
@@ -57,7 +102,7 @@ func (router *InstanceRouter) Init() {
 		if err != nil {
 			return err
 		}
-		return c.Redirect(http.StatusSeeOther, instanceRoute(instance))
+		return c.Redirect(http.StatusSeeOther, instanceRoute(instance.ID.Hex()))
 	})
 
 	group.PUT("/id/:id", func(c echo.Context) error {
@@ -71,7 +116,7 @@ func (router *InstanceRouter) Init() {
 			return err
 		}
 
-		return c.Redirect(http.StatusSeeOther, instanceRoute(instance))
+		return c.Redirect(http.StatusSeeOther, instanceRoute(instance.ID.Hex()))
 	})
 
 	group.DELETE("/id/:id", func(c echo.Context) error {

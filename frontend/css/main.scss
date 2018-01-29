@@ -12,6 +12,8 @@ $dark_slate_gray: #284B63;
 $isabelline: #F4F9E9;
 $portland_orange: #F46036;
 $gunmetal: #283044;
+$spring_bud: #CAEF8B;
+$dark_salmon: #EF8B98;
 
 body {
   box-sizing: border-box !important;
@@ -156,11 +158,35 @@ a {
     float: left;
     color: white;
     background: $yankees_blue;
+  }
+}
 
-    &:hover {
-      cursor: pointer;
-      transition: 0.3s;
-      background: lighten($yankees_blue, 10%);
-    }
+.spammer_running_indicator{
+  color: $spring_bud;
+}
+
+.spammer_stopped_indicator{
+  color: $dark_salmon;
+}
+
+.smallButton {
+  width: auto;
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+  padding-left: 20px;
+  padding-right: 20px;
+  background: white;
+  color: black;
+  border: none;
+  text-align: center;
+  float: left;
+  margin-right: 10px;
+
+  &:hover {
+    transition: 0.1s;
+    cursor: pointer;
+    background: $dark_slate_gray;
+    color: white;
   }
 }

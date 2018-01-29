@@ -93,7 +93,7 @@ func (coo *Coordinator) communicate(connLogger log15.Logger, slaveWsConn *websoc
 		}
 		return
 	}
-
+	slaveHexID := slave.ID.Hex()
 	slaveLogger := connLogger.New("slave", slave.Name)
 
 	// marshal the current spammer config as a payload
@@ -142,30 +142,95 @@ func (coo *Coordinator) communicate(connLogger log15.Logger, slaveWsConn *websoc
 	slaveLogger.Info("spammer was started on slave")
 	slaveLogger.Info("collecting metric data...")
 
-	exit:
+	// set the slave's instance state to be online
+	slave.Online = true
+	if err := coo.InstanceCtrl.UpdateOnlineState(slave.ID.Hex(), true); err != nil {
+		slaveLogger.Warn("unable to set online state in db", "err", err.Error())
+		return
+	}
+
+	defer func() {
+		if err := coo.InstanceCtrl.UpdateOnlineState(slave.ID.Hex(), false); err != nil {
+			slaveLogger.Warn("unable to set online state in db", "err", err.Error())
+		}
+	}()
+
+	webGateway := make(chan interface{})
+	coo.InstanceCtrl.AddGateway(slaveHexID, webGateway)
+
+	shutdownChann := make(chan struct{})
+	slaveGateway := coo.slaveGateway(slaveWsConn, slaveLogger, shutdownChann)
+	defer coo.InstanceCtrl.RemoveGateway(slaveHexID)
+
+exit:
 	for {
 
-		msg := &api.SlaveMsg{}
-		if err := slaveWsConn.ReadJSON(msg); err != nil {
-			slaveLogger.Warn("unable to read new msg", "err", err.Error())
-			break
-		}
+		// read input from instance controller (i.e: web request command)
+		// or from the slave itself
 
-		// router for messages
-		switch msg.Type {
-		case api.SLAVE_SPAMMER_STATE:
-			coo.printSlaveStateInfo(slaveWsConn, slaveLogger, msg.Payload)
-		case api.SLAVE_BYE:
-			slaveLogger.Info("disconnected")
-			break exit
-		case api.SLAVE_INTERNAL_ERROR:
-			slaveLogger.Warn("the slave encountered an internal error")
-			break exit
-		default:
-			slaveLogger.Warn("got an unknown msg type from slave", "code", msg.Type)
-		}
+		select {
 
+		// messages from instance controller (web api)
+		case ctrlMsg := <-webGateway:
+			switch msg := ctrlMsg.(type) {
+			case *api.CooMsg:
+				slaveLogger.Info("sending msg received via WebAPI to slave", "code", msg.Type)
+				if err := slaveWsConn.WriteJSON(msg); err != nil {
+					slaveLogger.Warn(fmt.Sprintf("unable to send msg of type %d", msg.Type), "error", err.Error())
+					break exit
+				}
+			}
+
+			// messages from slave
+		case msg := <-slaveGateway:
+			switch msg.Type {
+			case api.SLAVE_SPAMMER_STATE:
+				coo.printSlaveStateInfo(slaveWsConn, slaveLogger, msg.Payload)
+
+				lastState := &api.SlaveSpammerStateMsg{}
+				if err := json.Unmarshal(msg.Payload, lastState); err != nil {
+					slaveLogger.Warn("unable to parse payload of SLAVE_SPAMMER_STATE msg", "err", err.Error())
+					break exit
+				}
+
+				slaveLogger.Info("updating last state")
+				if err := coo.InstanceCtrl.UpdateLastState(slaveHexID, lastState); err != nil {
+					slaveLogger.Warn("unable to update last state in db", "err", err.Error())
+					break exit
+				}
+
+			case api.SLAVE_BYE:
+				slaveLogger.Info("disconnected")
+				break exit
+			case api.SLAVE_INTERNAL_ERROR:
+				slaveLogger.Warn("the slave encountered an internal error")
+				break exit
+			default:
+				slaveLogger.Warn("got an unknown msg type from slave", "code", msg.Type)
+			}
+		}
 	}
+}
+
+func (coo *Coordinator) slaveGateway(ws *websocket.Conn, logger log15.Logger, shutdown chan struct{}) chan *api.SlaveMsg {
+	gateway := make(chan *api.SlaveMsg)
+	go func() {
+	exit:
+		for {
+			select {
+			case <-shutdown:
+				break exit
+			default: // do nothing and read the next message
+			}
+			msg := &api.SlaveMsg{}
+			if err := ws.ReadJSON(msg); err != nil {
+				logger.Warn("unable to read new msg", "err", err.Error())
+				break exit
+			}
+			gateway <- msg
+		}
+	}()
+	return gateway
 }
 
 func (coo *Coordinator) printSlaveStateInfo(slaveWsConn *websocket.Conn, logger log15.Logger, payload []byte) {
@@ -195,10 +260,12 @@ func (coo *Coordinator) sendStopMsg(slaveWsConn *websocket.Conn, logger log15.Lo
 
 func (coo *Coordinator) readSpammerStateMsg(slaveWsConn *websocket.Conn, logger log15.Logger) *api.SlaveSpammerStateMsg {
 	msg := &api.SlaveMsg{}
+	logger.Info("A")
 	if err := slaveWsConn.ReadJSON(msg); err != nil {
 		logger.Warn("unable to read expected spammer state msg", "err", err.Error())
 		return nil
 	}
+	logger.Info("B")
 
 	if msg.Type != api.SLAVE_SPAMMER_STATE {
 		logger.Warn("expected SLAVE_SPAMMER_STATE msg from slave", "actualCode", msg.Type)
@@ -210,6 +277,7 @@ func (coo *Coordinator) readSpammerStateMsg(slaveWsConn *websocket.Conn, logger 
 		logger.Warn("unable to parse payload of SLAVE_SPAMMER_STATE msg", "err", err.Error())
 		return nil
 	}
+	logger.Info("got state msg from slave")
 	return spammerStateMsg
 }
 

@@ -71,6 +71,8 @@ func (indexRouter *IndexRouter) Init() {
 			message = "not found"
 
 			// 400 bad request
+		case controllers.ErrInstanceIsOffline:
+			fallthrough
 		case controllers.ErrInvalidObjectId:
 			fallthrough
 		case ErrBadRequest:
