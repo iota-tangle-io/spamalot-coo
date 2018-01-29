@@ -142,6 +142,7 @@ func (coo *Coordinator) communicate(connLogger log15.Logger, slaveWsConn *websoc
 	slaveLogger.Info("spammer was started on slave")
 	slaveLogger.Info("collecting metric data...")
 
+	exit:
 	for {
 
 		msg := &api.SlaveMsg{}
@@ -152,11 +153,14 @@ func (coo *Coordinator) communicate(connLogger log15.Logger, slaveWsConn *websoc
 
 		// router for messages
 		switch msg.Type {
-		case api.SLAVE_BYE:
-			slaveLogger.Info("disconnected")
-			break
 		case api.SLAVE_SPAMMER_STATE:
 			coo.printSlaveStateInfo(slaveWsConn, slaveLogger, msg.Payload)
+		case api.SLAVE_BYE:
+			slaveLogger.Info("disconnected")
+			break exit
+		case api.SLAVE_INTERNAL_ERROR:
+			slaveLogger.Warn("the slave encountered an internal error")
+			break exit
 		default:
 			slaveLogger.Warn("got an unknown msg type from slave", "code", msg.Type)
 		}
