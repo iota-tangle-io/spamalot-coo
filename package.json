@@ -26,6 +26,7 @@
     "dexie": "^2.0.1",
     "dygraphs": "^2.0.0",
     "install": "^0.10.2",
+    "material-ui": "^1.0.0-beta.31",
     "mobx": "^3.3.2",
     "mobx-react": "^4.3.5",
     "moment": "^2.19.3",

@@ -55,6 +55,7 @@ export class InstanceOverview extends React.Component<Props, {}> {
 
                         <Link to={`/instance/${instance.id}`}>
                             <button className='smallButton' onClick={this.restart}>
+                                <i className="fas fa-tachometer-alt icon_margin_right"></i>
                                 Dashboard
                             </button>
                         </Link>
@@ -63,12 +64,15 @@ export class InstanceOverview extends React.Component<Props, {}> {
                     <div>
 
                         <button disabled={running} className='smallButton startButton' onClick={this.start}>
+                            <i className="fas fa-play icon_margin_right"></i>
                             Start
                         </button>
-                        <button disabled={!running} className='smallButton' onClick={this.stop}>
+                        <button disabled={!running} className='smallButton stopButton' onClick={this.stop}>
+                            <i className="fas fa-stop-circle icon_margin_right"></i>
                             Stop
                         </button>
                         <button className='smallButton restartButton' onClick={this.restart}>
+                            <i className="fas fa-angle-double-right icon_margin_right"></i>
                             Restart
                         </button>
 

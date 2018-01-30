@@ -63,14 +63,23 @@ export class InstanceView extends React.Component<Props, {}> {
                                 <div className={'instance_controls'}>
 
                                     <button disabled={running} className='smallButton startButton' onClick={this.start}>
+                                        <i className="fas fa-play icon_margin_right"></i>
                                         Start
                                     </button>
                                     <button disabled={!running} className='smallButton stopButton' onClick={this.stop}>
+                                        <i className="fas fa-stop-circle icon_margin_right"></i>
                                         Stop
                                     </button>
                                     <button className='smallButton restartButton' onClick={this.restart}>
+                                        <i className="fas fa-angle-double-right icon_margin_right"></i>
                                         Restart
                                     </button>
+                                    <Link to={`/instance/editor/u/${instance.id}`}>
+                                        <button className='smallButton floatRightButton' onClick={this.restart}>
+                                            <i className="fas fa-wrench icon_margin_right"></i>
+                                            Configure
+                                        </button>
+                                    </Link>
                                 </div>
                             }
                         </div>
@@ -80,7 +89,7 @@ export class InstanceView extends React.Component<Props, {}> {
                     <Col xs={12} lg={4}>
                         <div>
 
-                            <h3>Configuration:</h3>
+                            <h3 className={'bold'}>Configuration:</h3>
                             <p>Slave Address: {instance.address}</p>
                             <p>API Token: <span className={'api_token'}>{instance.api_token}</span></p>
                             <p>Description: {instance.desc}</p>
@@ -103,7 +112,7 @@ export class InstanceView extends React.Component<Props, {}> {
                         </div>
                     </Col>
                     <Col xs={12} lg={8}>
-                        <h3>Data:</h3>
+                        <h3 className={'bold'}>Data:</h3>
                         <div>
                             <InstanceTPS/>
                             <InstanceErrorRate/>

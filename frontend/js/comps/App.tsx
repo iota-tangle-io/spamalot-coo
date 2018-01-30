@@ -10,6 +10,7 @@ import {Configuration} from "./Configuration";
 import {InstancesDashboard} from "./instances/InstancesDashboard";
 import {Nav} from './Nav';
 import {InstanceView} from "./instances/InstanceView";
+import {InstanceEditor} from "./editor/InstanceEditor";
 
 declare var __DEVELOPMENT__;
 
@@ -36,6 +37,9 @@ export class App extends React.Component<Props, {}> {
                         <Route exact path={"/"} component={InstancesDashboard}/>
                         <Route exact path={"/instances"} component={InstancesDashboard}/>
                         <Route exact path={"/instance/:id"} component={InstanceView}/>
+                        <Route path={"/instance/editor"} >
+                            <Route exact path={"/new"} component={InstanceEditor}/>
+                        </Route>
                         <Route path={"/config"} component={Configuration}/>
                         <Route component={NotFound}/>
                     </Switch>

@@ -35,6 +35,10 @@ h1, h2, h3 {
   font-weight: normal;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .mainContainer {
   padding: 10px;
 }
@@ -170,6 +174,11 @@ a {
   color: $dark_salmon;
 }
 
+.box_margin_bottom{
+  margin-bottom: 20px;
+}
+
+/* TODO: renname to small_button */
 .smallButton {
   width: auto;
   height: 40px;
@@ -190,6 +199,20 @@ a {
     background: darken(white, 10%);
     cursor: pointer;
   }
+}
+
+.default_button {
+  @extend .smallButton;
+  background: $yankees_blue;
+  color: white;
+
+  &:hover {
+    color: black;
+  }
+}
+
+.icon_margin_right{
+  margin-right: 10px;
 }
 
 .instance_controls{
@@ -234,6 +257,15 @@ a {
   cursor: not-allowed;
   &:hover {
     color: black;
+  }
+}
+
+.floatRightButton {
+  float: right;
+
+  &:hover {
+    cursor: pointer;
+    background: lighten($midnight_dark, 20%);
   }
 }
 
