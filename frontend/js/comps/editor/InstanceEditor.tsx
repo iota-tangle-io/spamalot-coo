@@ -8,7 +8,7 @@ interface Props {
 }
 
 @observer
-export class InterfaceEditor extends React.Component<Props, {}> {
+export class InstanceEditor extends React.Component<Props, {}> {
     render() {
         return (
             <div>
