@@ -60,16 +60,17 @@ const (
 )
 
 type SpammerConfig struct {
-	NodeAddress  string  `json:"node_address" bson:"node_address"`
-	SecurityLvl  byte    `json:"security_lvl" bson: "security_lvl"`
-	MWM          byte    `json:"mwm" bson:"mwm"`
-	Depth        byte    `json:"depth" bson:"depth"`
-	Tag          string  `json:"tag" bson:"tag"`
-	Message      string  `json:"message" bson:"message"`
-	DestAddress  string  `json:"dest_address" bson:"dest_address"`
-	PoWMode      PoWMode `json:"pow_mode" bson:"pow_mode"`
-	FilterTrunk  bool    `json:"filter_trunk" bson:"filter_trunk"`
-	FilterBranch bool    `json:"filter_branch" bson:"filter_branch"`
+	NodeAddress     string  `json:"node_address" bson:"node_address"`
+	SecurityLvl     byte    `json:"security_lvl" bson: "security_lvl"`
+	MWM             byte    `json:"mwm" bson:"mwm"`
+	Depth           byte    `json:"depth" bson:"depth"`
+	Tag             string  `json:"tag" bson:"tag"`
+	Message         string  `json:"message" bson:"message"`
+	DestAddress     string  `json:"dest_address" bson:"dest_address"`
+	PoWMode         PoWMode `json:"pow_mode" bson:"pow_mode"`
+	FilterTrunk     bool    `json:"filter_trunk" bson:"filter_trunk"`
+	FilterBranch    bool    `json:"filter_branch" bson:"filter_branch"`
+	FilterMilestone bool    `json:"filter_milestone" bson:"filter_milestone"`
 }
 
 type SlaveSpammerStateMsg struct {
@@ -78,13 +79,16 @@ type SlaveSpammerStateMsg struct {
 }
 
 const NirvanaAddress = "999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+const DefaultMessage = "GOSPAMMER9SPAMALOT"
+const DefaultTag = "999SPAMALOT"
 
 func NewDefaultSpammerConfig() *SpammerConfig {
 	return &SpammerConfig{
 		NodeAddress: "http://127.0.0.1:14265",
 		SecurityLvl: 3, MWM: 14, PoWMode: POW_LOCAL,
-		FilterTrunk: true, FilterBranch: true, DestAddress: NirvanaAddress,
-		Depth:       3, Tag: "999SPAMALOT", Message: "GOSPAMMER9SPAMALOT",
+		FilterTrunk: true, FilterBranch: true, FilterMilestone: true,
+		DestAddress: NirvanaAddress,
+		Depth:       3, Tag: DefaultTag, Message: DefaultMessage,
 	}
 }
 

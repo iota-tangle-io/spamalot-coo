@@ -20,6 +20,7 @@ type Instance struct {
 	Desc          string                    `json:"desc" bson:"desc"`
 	Tags          []string                  `json:"tags" bson:"tags"`
 	Online        bool                      `json:"online" bson:"online"`
+	CheckAddress  bool                      `json:"check_address" bson:"check_address"`
 	SpammerConfig *api.SpammerConfig        `json:"spammer_config" bson:"spammer_config"`
 	LastState     *api.SlaveSpammerStateMsg `json:"last_state" bson:"last_state"`
 	CreatedOn     time.Time                 `json:"created_on" bson:"created_on"`

@@ -14,7 +14,7 @@ export class InstanceStore {
     @observable fake_error_data: ObservableMap<FakeTPS> = observable.map();
 
     constructor() {
-        this.generateRandomTPSData();
+        //this.generateRandomTPSData();
     }
 
     // TODO: remove later

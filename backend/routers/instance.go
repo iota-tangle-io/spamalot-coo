@@ -92,7 +92,7 @@ func (router *InstanceRouter) Init() {
 		return c.JSON(http.StatusOK, instance)
 	})
 
-	group.POST("/id/:id", func(c echo.Context) error {
+	group.POST("/id", func(c echo.Context) error {
 		instance := &models.Instance{}
 		if err := c.Bind(instance); err != nil {
 			return err

@@ -11,6 +11,7 @@ import (
 	"github.com/iota-tangle-io/spamalot-coo/backend/lib"
 	"github.com/iota-tangle-io/spamalot-coo/api"
 	"sync"
+	"encoding/json"
 )
 
 const instancesColl = "instances"
@@ -27,7 +28,7 @@ func (ctrl *InstanceCtrl) Init() error {
 	ctrl.coll = ctrl.Mongo.DB("").C(instancesColl)
 	rand.Seed(time.Now().Unix())
 	ctrl.gateways = map[string]chan interface{}{}
-	ctrl.addDefaultInstance()
+	//ctrl.addDefaultInstance()
 	return nil
 }
 
@@ -90,25 +91,39 @@ func (ctrl *InstanceCtrl) Add(instance *models.Instance) error {
 		}
 	}
 
-	instance.SpammerConfig = api.NewDefaultSpammerConfig()
+	if instance.SpammerConfig == nil {
+		instance.SpammerConfig = api.NewDefaultSpammerConfig()
+	}
 	instance.APIToken = apiToken
 	err := ctrl.coll.Insert(instance)
 	return errors.WithStack(err)
 }
 
 func (ctrl *InstanceCtrl) Update(instance *models.Instance) error {
-	err := ctrl.coll.UpdateId(instance.ID, bson.M{
+	if err := ctrl.coll.UpdateId(instance.ID, bson.M{
 		"$set": bson.M{
 			"address":        instance.Address,
 			"name":           instance.Name,
 			"desc":           instance.Desc,
+			"check_address":  instance.CheckAddress,
 			"tags":           instance.Tags,
 			"spammer_config": instance.SpammerConfig,
 			// online is set by the coordinator
 			"updated_on": time.Now(),
 		},
-	})
-	return errors.WithStack(err)
+	}); err != nil {
+		return errors.WithStack(err)
+	}
+
+	// TODO: only reset config on slave if it actually changed
+	spammerConfigBytes, err := json.Marshal(instance.SpammerConfig)
+	if err == nil {
+		if err := ctrl.SendCooMsgToSlave(instance.ID.Hex(), api.SP_RESET_CONFIG, spammerConfigBytes); err != nil {
+			fmt.Printf("unable to send SP_RESET_CONFIG to slave, err: %s", err.Error())
+		}
+	}
+
+	return nil
 }
 
 func (ctrl *InstanceCtrl) UpdateOnlineState(id string, online bool) error {

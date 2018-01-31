@@ -7,6 +7,7 @@ import {
     LineChart, ComposedChart, Brush, XAxis, Line, YAxis,
     CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import Divider from "material-ui/Divider";
 
 
 interface Props {
@@ -23,7 +24,9 @@ export class InstanceTXLog extends React.Component<Props, {}> {
         let instance = this.props.instanceStore.instances.get(id);
         return (
             <div>
-                <h3>Transactions:</h3>
+                <h3>Transactions</h3>
+                <Divider/>
+                <br/>
                 <div className={'tx_log'}>
                     <span className='log_entry'>TX: BLABLABLABLABLA</span>
                     <span className='log_entry'>TX: BLABLABLABLABLA</span>

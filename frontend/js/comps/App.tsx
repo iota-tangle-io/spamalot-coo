@@ -37,9 +37,8 @@ export class App extends React.Component<Props, {}> {
                         <Route exact path={"/"} component={InstancesDashboard}/>
                         <Route exact path={"/instances"} component={InstancesDashboard}/>
                         <Route exact path={"/instance/:id"} component={InstanceView}/>
-                        <Route path={"/instance/editor"} >
-                            <Route exact path={"/new"} component={InstanceEditor}/>
-                        </Route>
+                        <Route path={"/instance/editor/create"} component={InstanceEditor} />
+                        <Route path={"/instance/editor/update/:id"} component={InstanceEditor} />
                         <Route path={"/config"} component={Configuration}/>
                         <Route component={NotFound}/>
                     </Switch>
