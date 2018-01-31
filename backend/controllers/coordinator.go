@@ -160,6 +160,9 @@ func (coo *Coordinator) communicate(connLogger log15.Logger, slaveWsConn *websoc
 
 	shutdownChann := make(chan struct{})
 	slaveGateway := coo.slaveGateway(slaveWsConn, slaveLogger, shutdownChann)
+	defer func(){
+		shutdownChann<-struct{}{}
+	}()
 	defer coo.InstanceCtrl.RemoveGateway(slaveHexID)
 
 exit:
