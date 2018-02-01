@@ -4,6 +4,7 @@ import (
 	"time"
 	"github.com/globalsign/mgo/bson"
 	"github.com/iota-tangle-io/spamalot-coo/api"
+	"github.com/iota-tangle-io/iota-spamalot.go"
 )
 
 type Instances []*Instance
@@ -25,4 +26,12 @@ type Instance struct {
 	LastState     *api.SlaveSpammerStateMsg `json:"last_state" bson:"last_state"`
 	CreatedOn     time.Time                 `json:"created_on" bson:"created_on"`
 	UpdatedOn     time.Time                 `json:"updated_on" bson:"updated_on"`
+}
+
+type InstanceMetric struct {
+	ID        bson.ObjectId       `json:"id" bson:"_id"`
+	Instance  bson.ObjectId       `json:"instance_id" bson:"instance_id"`
+	Metric    spamalot.MetricType `json:"metric" bson:"metric"`
+	Data      interface{}         `json:"data" bson:"data"`
+	CreatedOn time.Time           `json:"created_on" bson:"created_on"`
 }

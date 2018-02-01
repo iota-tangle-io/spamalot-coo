@@ -12,6 +12,7 @@ import (
 	"github.com/iota-tangle-io/spamalot-coo/api"
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/iota-tangle-io/iota-spamalot.go"
 )
 
 type Coordinator struct {
@@ -124,23 +125,6 @@ func (coo *Coordinator) communicate(connLogger log15.Logger, slaveWsConn *websoc
 	}
 
 	slaveLogger.Info("slave's configuration hash is valid")
-	slaveLogger.Info("starting spammer on slave...")
-
-	coo.sendStartMsg(slaveWsConn, slaveLogger)
-
-	spammerStateMsg = coo.readSpammerStateMsg(slaveWsConn, slaveLogger)
-	if spammerStateMsg == nil {
-		slaveLogger.Warn("unable to read spammer state after sending SP_START")
-		return
-	}
-
-	if !spammerStateMsg.Running {
-		slaveLogger.Warn("expected spammer to be running after start msg, canceling conn.")
-		return
-	}
-
-	slaveLogger.Info("spammer was started on slave")
-	slaveLogger.Info("collecting metric data...")
 
 	// set the slave's instance state to be online
 	slave.Online = true
@@ -160,8 +144,8 @@ func (coo *Coordinator) communicate(connLogger log15.Logger, slaveWsConn *websoc
 
 	shutdownChann := make(chan struct{})
 	slaveGateway := coo.slaveGateway(slaveWsConn, slaveLogger, shutdownChann)
-	defer func(){
-		shutdownChann<-struct{}{}
+	defer func() {
+		shutdownChann <- struct{}{}
 	}()
 	defer coo.InstanceCtrl.RemoveGateway(slaveHexID)
 
@@ -205,6 +189,17 @@ exit:
 			case api.SLAVE_BYE:
 				slaveLogger.Info("disconnected")
 				break exit
+
+			case api.SLAVE_METRIC:
+				metric := &spamalot.Metric{}
+				if err := json.Unmarshal(msg.Payload, metric); err != nil {
+					slaveLogger.Warn("unable to parse payload of SLAVE_METRIC msg", "err", err.Error())
+					break exit
+				}
+				if err := coo.InstanceCtrl.AddMetric(slaveHexID, metric); err != nil{
+					slaveLogger.Warn("unable to save metric to db", "err", err.Error())
+					break exit
+				}
 			case api.SLAVE_INTERNAL_ERROR:
 				slaveLogger.Warn("the slave encountered an internal error")
 				break exit

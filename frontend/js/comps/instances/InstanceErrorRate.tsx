@@ -7,14 +7,17 @@ import {
     LineChart, ComposedChart, Brush, XAxis, Line, YAxis,
     CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import {MetricsStore} from "../../stores/MetricsStore";
 
 
 interface Props {
     instanceStore?: InstanceStore;
+    metricsStore?: MetricsStore;
     match?: { params: { id: string } };
 }
 
 @withRouter
+@inject("metricsStore")
 @inject("instanceStore")
 @observer
 export class InstanceErrorRate extends React.Component<Props, {}> {
@@ -22,12 +25,12 @@ export class InstanceErrorRate extends React.Component<Props, {}> {
         let id = this.props.match.params.id;
         let instance = this.props.instanceStore.instances.get(id);
         let config = instance.spammer_config;
-        let fakeErrorRateData = this.props.instanceStore.instanceErrorRateData;
+        let errorRate = this.props.metricsStore.errorRate;
         return (
 
             <div>
                 <ResponsiveContainer width="100%" height={200}>
-                    <ComposedChart data={fakeErrorRateData} syncId="error_rate">
+                    <ComposedChart data={errorRate} syncId="error_rate">
                         <XAxis dataKey="name"/>
                         <YAxis/>
                         <CartesianGrid strokeDasharray="2 2"/>

@@ -1,5 +1,7 @@
 # spamalot coordinator (wip)
 
+![dashboard](https://i.imgur.com/3QJx8qC.png)
+
 ## description
 The spamalot-coo is a SPA allowing the remote control of
 spamalot slave instances which in turn control spammers.

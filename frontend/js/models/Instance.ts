@@ -22,7 +22,7 @@ export class Instance extends Model {
         this.tags = this.tags || [];
         this.online = this.online || false;
         this.check_address = this.check_address || false;
-        this.spammer_config = this.spammer_config ||  new SpammerConfig();
+        this.spammer_config = this.spammer_config || new SpammerConfig();
         this.url = '/api/instances/id';
     }
 
@@ -115,5 +115,53 @@ export class AllInstances extends Instances {
     constructor(models?: Array<Instance>, options?: any) {
         super(models, options);
         this.url = `/api/instances`;
+    }
+}
+
+export let MetricType = {
+    INC_MILESTONE_BRANCH: 0,
+    INC_MILESTONE_TRUNK: 1,
+    INC_BAD_TRUNK: 2,
+    INC_BAD_BRANCH: 3,
+    INC_BAD_TRUNK_AND_BRANCH: 4,
+    INC_FAILED_TX: 5,
+    INC_SUCCESSFUL_TX: 6,
+    SUMMARY: 7,
+}
+
+export class TXData {
+    hash: string;
+    count: number;
+    created_on: Date;
+}
+
+export class MetricSummary {
+    txs_succeeded: number;
+    txs_failed: number;
+    bad_branch: number;
+    bad_trunk: number;
+    bad_trunk_and_branch: number;
+    milestone_trunk: number;
+    milestone_branch: number;
+    tps: number;
+    error_rate: number;
+}
+
+export class Metric extends Model {
+    @observable metric: number;
+    @observable instance_id: string;
+    @observable data: any;
+    @observable created_on: Date;
+
+    constructor(attrs?: any) {
+        super(attrs);
+        this.metric = this.metric || -1;
+        this.url = '/api/instances/id';
+    }
+}
+
+export class Metrics extends Collection<Metric> {
+    constructor(models?: Array<Metric>, options?: any) {
+        super(Metric, models, options);
     }
 }

@@ -16,9 +16,12 @@ import Grid from 'material-ui/Grid';
 import Button from "material-ui/Button";
 import Paper from 'material-ui/Paper';
 import Divider from "material-ui/Divider";
+import {MetricsStore, MetricsStoreInstance as metricsStore} from "../../stores/MetricsStore";
+import {MetricSummary} from "../../models/Instance";
 
 interface Props {
     instanceStore: InstanceStore;
+    metricsStore: MetricsStore;
     match: { params: { id: string } };
 }
 
@@ -48,11 +51,17 @@ const styles: StyleRulesCallback = (theme: Theme) => ({
 });
 
 @withRouter
+@inject("metricsStore")
 @inject("instanceStore")
 @observer
 class instanceView extends React.Component<Props & WithStyles, {}> {
     componentWillMount() {
         this.props.instanceStore.fetchInstance(this.props.match.params.id);
+        this.props.metricsStore.pullMetrics(this.props.match.params.id);
+    }
+
+    componentWillUnmount() {
+        this.props.metricsStore.stopPullingMetrics();
     }
 
     stop = () => {
@@ -78,8 +87,7 @@ class instanceView extends React.Component<Props & WithStyles, {}> {
         }
         let classes = this.props.classes;
         let config = instance.spammer_config;
-        let fakeTPSDate = this.props.instanceStore.instanceTPSData;
-        let fakeErrorRateData = this.props.instanceStore.instanceErrorRateData;
+        let lastMetric: MetricSummary = this.props.metricsStore.last_metric.data;
         let running = instance.last_state ? instance.last_state.running : false;
         return (
             <div>
@@ -158,6 +166,20 @@ class instanceView extends React.Component<Props & WithStyles, {}> {
                         <Paper className={classes.paper}>
                             <h3>Data</h3>
                             <Divider className={classes.divider}/>
+                                {
+                                    lastMetric &&
+                                    <div className={'last_metric'}>
+                                        TPS: {Math.floor(lastMetric.tps*100)/100}, 
+                                        Error Rate: {Math.floor(lastMetric.error_rate*100)/100},
+                                        Bad Branch: {lastMetric.bad_branch},
+                                        Bad Trunk: {lastMetric.bad_trunk},
+                                        Bad Branch And Trunk: {lastMetric.bad_trunk_and_branch},
+                                        Milestone Branch: {lastMetric.milestone_branch},
+                                        Milestone Trunk: {lastMetric.milestone_trunk},
+                                        TX succeeded: {lastMetric.txs_succeeded},
+                                        TX failed: {lastMetric.txs_failed},
+                                    </div>
+                                }
                             <InstanceTPS/>
                             <InstanceErrorRate/>
                         </Paper>

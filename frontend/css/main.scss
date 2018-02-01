@@ -292,12 +292,35 @@ a {
   color: white;
 }
 
+@keyframes log_entry_ani {
+  from {
+    opacity: 0;
+    top: -40px;
+  }
+  to{
+    top: 0px;
+    opacity: 1;
+  }
+}
+
+.last_metric{
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
 .tx_log {
   padding: 10px;
   background: $midnight_dark;
   height: 200px;
   overflow-y: scroll;
+  .log_link{
+    color: orange;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
   .log_entry{
+    position: relative;
+    animation: log_entry_ani 0.6s;
     color: #27da9f;
     display: block;
     margin-bottom: 5px;

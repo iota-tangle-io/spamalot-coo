@@ -119,6 +119,9 @@ const (
 	// a message containing the current state of the spammer
 	SLAVE_SPAMMER_STATE SlaveMsgType = 3
 
+	// a metric even by the spammer
+	SLAVE_METRIC = 5
+
 	SLAVE_INTERNAL_ERROR SlaveMsgType = 40
 )
 

@@ -7,14 +7,17 @@ import {
     LineChart, ComposedChart, Brush, XAxis, Line, YAxis,
     CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import {MetricsStore} from "../../stores/MetricsStore";
 
 
 interface Props {
     instanceStore?: InstanceStore;
+    metricsStore?: MetricsStore;
     match?: { params: { id: string } };
 }
 
 @withRouter
+@inject("metricsStore")
 @inject("instanceStore")
 @observer
 export class InstanceTPS extends React.Component<Props, {}> {
@@ -22,11 +25,11 @@ export class InstanceTPS extends React.Component<Props, {}> {
         let id = this.props.match.params.id;
         let instance = this.props.instanceStore.instances.get(id);
         let config = instance.spammer_config;
-        let fakeTPSDate = this.props.instanceStore.instanceTPSData;
+        let tpsData = this.props.metricsStore.tps;
         return (
             <div>
                 <ResponsiveContainer width="100%" height={200}>
-                    <ComposedChart data={fakeTPSDate} syncId="tps">
+                    <ComposedChart data={tpsData} syncId="tps">
                         <XAxis dataKey="name"/>
                         <YAxis/>
                         <CartesianGrid strokeDasharray="2 2"/>

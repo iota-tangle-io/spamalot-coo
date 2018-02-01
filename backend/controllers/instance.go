@@ -12,23 +12,40 @@ import (
 	"github.com/iota-tangle-io/spamalot-coo/api"
 	"sync"
 	"encoding/json"
+	"github.com/iota-tangle-io/iota-spamalot.go"
 )
 
 const instancesColl = "instances"
+const instanceLogColl = "instance_log"
 
 type InstanceCtrl struct {
 	Mongo     *mgo.Session `inject:""`
 	coll      *mgo.Collection
+	logColl   *mgo.Collection
 	Coo       *Coordinator `inject:""`
 	muGateway sync.RWMutex
 	gateways  map[string]chan interface{}
+	muStreams sync.Mutex
+	streams   map[string][]chan *models.InstanceMetric
 }
 
 func (ctrl *InstanceCtrl) Init() error {
 	ctrl.coll = ctrl.Mongo.DB("").C(instancesColl)
+	ctrl.logColl = ctrl.Mongo.DB("").C(instanceLogColl)
 	rand.Seed(time.Now().Unix())
 	ctrl.gateways = map[string]chan interface{}{}
+	ctrl.streams = map[string][]chan *models.InstanceMetric{}
 	//ctrl.addDefaultInstance()
+
+	// reset online states of all instances
+	if err := ctrl.coll.Update(nil, bson.M{
+		"$set": bson.M{
+			"online": false,
+		},
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -97,6 +114,52 @@ func (ctrl *InstanceCtrl) Add(instance *models.Instance) error {
 	instance.APIToken = apiToken
 	err := ctrl.coll.Insert(instance)
 	return errors.WithStack(err)
+}
+
+func (ctrl *InstanceCtrl) AddMetric(id string, metric *spamalot.Metric) error {
+	if !bson.IsObjectIdHex(id) {
+		return errors.Wrapf(ErrInvalidObjectId, "%s is not a object id", id)
+	}
+	instanceMetric := &models.InstanceMetric{
+		ID:        bson.NewObjectId(),
+		Instance:  bson.ObjectIdHex(id),
+		Metric:    metric.Kind,
+		Data:      metric.Data,
+		CreatedOn: time.Now(),
+	}
+	err := ctrl.logColl.Insert(instanceMetric)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	for k, v := range ctrl.streams {
+		if k == id {
+			for _, channel := range v {
+				select {
+				case channel <- instanceMetric:
+				default:
+				}
+			}
+			break
+		}
+	}
+
+	return nil
+}
+
+func (ctrl *InstanceCtrl) MetricsStream(id string, since time.Time) <-chan *models.InstanceMetric {
+	ctrl.muStreams.Lock()
+	defer ctrl.muStreams.Unlock()
+
+	metricStream := make(chan *models.InstanceMetric)
+	channels, ok := ctrl.streams[id]
+	if !ok {
+		channels = []chan *models.InstanceMetric{
+			make(chan *models.InstanceMetric),
+		}
+	}
+	channels = append(channels, metricStream)
+	ctrl.streams[id] = channels
+	return metricStream
 }
 
 func (ctrl *InstanceCtrl) Update(instance *models.Instance) error {

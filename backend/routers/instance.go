@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"github.com/iota-tangle-io/spamalot-coo/api"
 	"encoding/json"
+	"github.com/gorilla/websocket"
+	"time"
 )
 
 type InstanceRouter struct {
@@ -18,6 +20,10 @@ type InstanceRouter struct {
 func instanceRoute(id string) string {
 	return fmt.Sprintf("/api/instances/id/%s", id)
 }
+
+var (
+	upgrader = websocket.Upgrader{}
+)
 
 func (router *InstanceRouter) Init() {
 
@@ -62,6 +68,26 @@ func (router *InstanceRouter) Init() {
 			return err
 		}
 		return c.Redirect(http.StatusSeeOther, instanceRoute(id))
+	})
+
+	group.GET("/id/:id/metrics", func(c echo.Context) error {
+		id := c.Param("id")
+		thirtySecondsAgo := time.Now().Add(-(time.Duration(30) * time.Second))
+
+		stream := router.InstanceCtrl.MetricsStream(id, thirtySecondsAgo)
+		ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
+		if err != nil {
+			return err
+		}
+		defer ws.Close()
+
+		for metric := range stream {
+			if err := ws.WriteJSON(metric); err != nil {
+				break
+			}
+		}
+
+		return nil
 	})
 
 	group.POST("/id/:id/reset_config", func(c echo.Context) error {

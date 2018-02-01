@@ -26,11 +26,12 @@ import {AppStoreInstance as appStore} from "./stores/AppStore";
 import {ConfigStoreInstance as configStore} from "./stores/ConfigStore";
 import {InstanceStoreInstance as instanceStore} from "./stores/InstanceStore";
 import {InstanceEditorStoreInstance as instanceEditorStore} from "./stores/InstanceEditorStore";
+import {MetricsStoreInstance as metricsStore} from "./stores/MetricsStore";
 
 // use MobX in strict mode
 useStrict(true);
 
-let stores = {appStore, configStore, instanceStore, instanceEditorStore};
+let stores = {appStore, configStore, instanceStore, instanceEditorStore, metricsStore};
 
 const render = Component => {
     ReactDOM.render(

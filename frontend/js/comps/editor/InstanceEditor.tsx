@@ -272,21 +272,17 @@ class instanceEditor extends React.Component<Props & WithStyles, {}> {
                                 />
                             </Tooltip>
 
-                            <Tooltip id="tooltip-icon" placement="top-start"
-                                     title="proof of work: either done locally by the spammer or by the specified IRI node"
-                            >
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel htmlFor="uncontrolled-native">Proof of Work</InputLabel>
-                                    <Select
-                                        value={spammer.pow_mode} input={<Input id="uncontrolled-native"/>}
-                                        onChange={this.handlePoWModeChange}
-                                    >
-                                        <MenuItem value={0}>Local</MenuItem>
-                                        <MenuItem value={1}>IRI Node</MenuItem>
-                                    </Select>
-                                    {/*<FormHelperText>Uncontrolled</FormHelperText>*/}
-                                </FormControl>
-                            </Tooltip>
+                            <FormControl className={classes.formControl}>
+                                <InputLabel htmlFor="uncontrolled-native">Proof of Work</InputLabel>
+                                <Select
+                                    value={spammer.pow_mode} input={<Input id="uncontrolled-native"/>}
+                                    onChange={this.handlePoWModeChange}
+                                >
+                                    <MenuItem value={0}>Local</MenuItem>
+                                    <MenuItem value={1}>IRI Node</MenuItem>
+                                </Select>
+                                {/*<FormHelperText>Uncontrolled</FormHelperText>*/}
+                            </FormControl>
 
                             <FormGroup row className={classes.formGroup}>
                                 <FormControlLabel
