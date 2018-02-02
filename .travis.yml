@@ -2,6 +2,9 @@ language: go
 go:
   - 1.9.3
 
+# only build if a tag is present
+if: tag IS present
+
 sudo: required
 
 services:
