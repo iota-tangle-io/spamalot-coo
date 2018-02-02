@@ -2,9 +2,6 @@ language: go
 go:
   - 1.9.3
 
-# only build if a tag is present
-if: tag IS present
-
 sudo: required
 
 services:
@@ -18,7 +15,7 @@ install:
 script:
   - npm run build # compile frontend bundle
   - cd backend/cmd
-  - go build -ldflags="-s -w" -v -o coo # compile backend app
+  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -v -o coo # compile backend app
 
 after_script:
   - cd ../.. #change back too root
