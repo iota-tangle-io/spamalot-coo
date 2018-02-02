@@ -15,7 +15,7 @@ install:
 script:
   - npm run build # compile frontend bundle
   - cd backend/cmd
-  - go build -ldflags=\"-s -w\" -v -o coo # compile backend app
+  - go build -ldflags="-s -w" -v -o coo # compile backend app
 
 after_script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
