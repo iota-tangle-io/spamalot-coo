@@ -17,7 +17,7 @@ script:
   - cd backend/cmd
   - go build -ldflags=\"-s -w\" -v -o coo # compile backend app
 
-deploy:
+after_script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
   - docker build -t iotatangleio/spamalot-coo:latest .
   - docker push iotatangleio/spamalot-coo:latest
