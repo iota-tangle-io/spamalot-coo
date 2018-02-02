@@ -1,4 +1,4 @@
-# spamalot coordinator (wip)
+# spamalot coordinator (wip) [![Build Status](https://travis-ci.org/iota-tangle-io/spamalot-coo.svg?branch=master)](https://travis-ci.org/iota-tangle-io/spamalot-coo)
 
 ![dashboard](https://i.imgur.com/3QJx8qC.png)
 
