@@ -20,6 +20,11 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
+ignored = [
+    "github.com/iota-tangle-io/spamalot-slave",
+    "github.com/iota-tangle-io/iota-spamalot.go",
+    "github.com/cwarner818/giota"
+]
 
 [[constraint]]
   branch = "master"

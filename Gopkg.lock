@@ -38,6 +38,12 @@
   version = "v1.2.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jgillich/go-opencl"
+  packages = ["cl"]
+  revision = "db9961dcc93ff747f6695ae3d18664d0a93c42c6"
+
+[[projects]]
   name = "github.com/labstack/echo"
   packages = [".","middleware"]
   revision = "cec7629194fe4bf83b0c72d9a02d340c7a1468ac"
@@ -103,9 +109,15 @@
   packages = [".","bson","internal/json","internal/sasl","internal/scram"]
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
+[[projects]]
+  branch = "master"
+  name = "leb.io/hashland"
+  packages = ["keccakpg"]
+  revision = "07375b562deaa8d6891f9618a04e94a0b98e2ee7"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9799b641502f80b469f70875de002a65f3aef213a965c82c11ad8d39bd919858"
+  inputs-digest = "a60111f22428207d1ed9469918e95fd86604d32da519560c4d79bd7ed72bf503"
   solver-name = "gps-cdcl"
   solver-version = 1

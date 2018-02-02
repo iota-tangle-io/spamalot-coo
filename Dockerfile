@@ -11,7 +11,7 @@ RUN mkdir -p     /app/backend/cmd/configs \
 && mkdir -p     /app/backend/cmd/logs
 
 # copy backend binary
-COPY backend/cmd/tapi /app/backend/cmd
+COPY backend/cmd/coo /app/backend/cmd
 
 # copy spa assets
 COPY frontend/css/*                 /app/frontend/css/
